@@ -1,6 +1,6 @@
 import os
 import numpy as np
-from itertools import izip_longest
+from itertools import zip_longest
 from sklearn.metrics import recall_score, precision_score, accuracy_score
 from tensorflow.contrib import rnn
 import tensorflow as tf
@@ -20,10 +20,10 @@ class DataLoader(object):
     @staticmethod
     def change_scale(a, t):
         size = a.shape[1]
-        b = np.zeros([a.shape[0], size / t + bool(size % t), a.shape[2]])
+        b = np.zeros([a.shape[0], size // t + bool(size % t), a.shape[2]])
         for i in range(a.shape[0]):
             for j in range(0, size, t):
-                b[i, j / t, :] = np.sum(a[i, j: j + t, :], axis=0)
+                b[i, j // t, :] = np.sum(a[i, j: j + t, :], axis=0)
         return b
 
     @staticmethod
@@ -39,11 +39,11 @@ class DataLoader(object):
         return a_out, z_out
 
     def loader(self, batch_size, phase='train'):
-        span = range(len(getattr(self, phase + '_data')))
+        span = list(range(len(getattr(self, phase + '_data'))))
         if phase == 'train':
             np.random.shuffle(span)
         args = [iter(span)] * batch_size
-        for indexes in izip_longest(*args):
+        for indexes in zip_longest(*args):
             x, y = np.asarray([getattr(self, phase + '_data')[i] for i in indexes if i is not None]), \
                 np.asarray([getattr(self, phase + '_label')[i] for i in indexes if i is not None])
             x, z = self.scale_normalize(x, 1)

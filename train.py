@@ -1,9 +1,9 @@
 """Command-line utility for training"""
-
 import argparse
 from model import train
 import numpy as np
 import pickle
+
 
 def main():
     parser = argparse.ArgumentParser()
@@ -22,11 +22,21 @@ def main():
     args = parser.parse_args()
 
     with open(args.path, 'rb') as f:
-        data = pickle.load(f)
+        u = pickle._Unpickler(f)
+        u.encoding = 'latin1'
 
+        data = u.load()
+
+    import pprint
+
+    pp = pprint.PrettyPrinter()
+    pp.pprint(data)
     precision = []
     recall = []
     run_n = args.runs
+
+
+
 
     args = vars(args) 
     del args['path']
